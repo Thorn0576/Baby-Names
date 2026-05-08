@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naming Benito</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FAF8F4;
+    --warm-white: #FFFFF8;
+    --ink: #1A1814;
+    --ink-light: #6B6760;
+    --ink-faint: #B0AEA9;
+    --sage: #7A9E7E;
+    --sage-light: #EAF0EA;
+    --rose: #C47C6E;
+    --rose-light: #F7EAE7;
+    --gold: #C9A84C;
+    --gold-light: #FBF5E6;
+    --border: rgba(26,24,20,0.10);
+    --border-med: rgba(26,24,20,0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* SETUP SCREEN */
+  #setup-screen {
+    width: 100%;
+    max-width: 480px;
+    margin: auto;
+    padding: 2.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .setup-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    text-align: center;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  .setup-subtitle {
+    font-size: 13px;
+    color: var(--ink-light);
+    text-align: center;
+    line-height: 1.7;
+    margin-top: -1rem;
+  }
+
+  .setup-card {
+    background: var(--warm-white);
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .setup-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-group label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .field-group input {
+    background: var(--cream);
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+    font-weight: 300;
+  }
+
+  .field-group input:focus {
+    border-color: var(--ink-faint);
+  }
+
+  .field-group input::placeholder {
+    color: var(--ink-faint);
+  }
+
+  .voter-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .voter-option {
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border-med);
+    background: var(--cream);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink-light);
+  }
+
+  .voter-option.selected {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+
+  .setup-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--ink);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: opacity 0.15s;
+  }
+
+  .setup-btn:hover { opacity: 0.85; }
+  .setup-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .setup-error {
+    font-size: 12px;
+    color: var(--rose);
+    text-align: center;
+    display: none;
+  }
+
+  /* MAIN APP */
+  #app {
+    display: none;
+    width: 100%;
+    max-width: 480px;
+    padding: 0 1.25rem;
+    flex-direction: column;
+  }
+
+  .app-header {
+    padding: 2rem 0 1.25rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .app-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.3px;
+    line-height: 1;
+  }
+
+  .voter-badge {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-med);
+    color: var(--ink-light);
+    background: var(--warm-white);
+    cursor: pointer;
+  }
+
+  /* TABS */
+  .tab-row {
+    display: flex;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  .tab {
+    padding: 10px 0;
+    margin-right: 1.5rem;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-faint);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 1.5px solid transparent;
+    margin-bottom: -0.5px;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+  }
+
+  /* VOTE TAB */
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .card-stack {
+    position: relative;
+    height: 300px;
+    margin-bottom: 1.25rem;
+  }
+
+  .name-card {
+    position: absolute;
+    inset: 0;
+    background: var(--warm-white);
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.75rem;
+    text-align: center;
+    transition: transform 0.38s cubic-bezier(.4,0,.2,1), opacity 0.32s;
+    will-change: transform;
+  }
+
+  .name-card.back {
+    transform: scale(0.95) translateY(8px);
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .name-card.front {
+    z-index: 1;
+  }
+
+  .name-card.fly-yes {
+    transform: translateX(160%) rotate(18deg);
+    opacity: 0;
+  }
+
+  .name-card.fly-no {
+    transform: translateX(-160%) rotate(-18deg);
+    opacity: 0;
+  }
+
+  .card-origin {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: -1px;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .card-meaning {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.6;
+    max-width: 240px;
+    font-weight: 300;
+  }
+
+  .card-hints {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .hint {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 400;
+  }
+
+  .hint-no { background: var(--rose-light); color: var(--rose); }
+  .hint-yes { background: var(--sage-light); color: var(--sage); }
+
+  .vote-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .vote-btn {
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.1s, opacity 0.1s;
+    letter-spacing: 0.01em;
+  }
+
+  .vote-btn:active { transform: scale(0.97); }
+
+  .btn-no {
+    background: var(--rose-light);
+    color: var(--rose);
+    border-color: rgba(196,124,110,0.3);
+  }
+
+  .btn-yes {
+    background: var(--sage-light);
+    color: var(--sage);
+    border-color: rgba(122,158,126,0.3);
+  }
+
+  .counter {
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ADD NAME */
+  .add-name-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .add-name-row input {
+    flex: 1;
+    background: var(--warm-white);
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    font-weight: 300;
+  }
+
+  .add-name-row input:focus { border-color: var(--ink-faint); }
+  .add-name-row input::placeholder { color: var(--ink-faint); }
+
+  .add-btn {
+    padding: 10px 16px;
+    background: var(--ink);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+
+  .add-btn:hover { opacity: 0.8; }
+
+  /* DONE STATE */
+  .done-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+  }
+
+  .done-icon {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+
+  .done-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .done-sub {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  .ghost-btn {
+    padding: 8px 20px;
+    background: none;
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink-light);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .ghost-btn:hover { border-color: var(--ink-faint); }
+
+  /* MATCHES TAB */
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+
+  .matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .match-card {
+    background: var(--warm-white);
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .match-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 5px;
+  }
+
+  .match-pill {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--sage-light);
+    color: var(--sage);
+    display: inline-block;
+  }
+
+  /* ALL VOTES TAB */
+  .votes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .vote-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--warm-white);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 16px;
+  }
+
+  .vote-row-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    flex: 1;
+    color: var(--ink);
+  }
+
+  .vote-indicators {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .v-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border-med);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--ink-faint);
+  }
+
+  .v-yes { background: var(--sage-light); color: var(--sage); border-color: rgba(122,158,126,0.3); }
+  .v-no { background: var(--rose-light); color: var(--rose); border-color: rgba(196,124,110,0.3); }
+  .v-pending { background: var(--cream); }
+
+  .voter-label {
+    font-size: 9px;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .v-col { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .empty-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+
+  .empty-sub {
+    font-size: 13px;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+
+  .sync-bar {
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-align: center;
+    padding: 8px 0 0;
+    letter-spacing: 0.02em;
+  }
+
+  .sync-bar.syncing { color: var(--gold); }
+  .sync-bar.error { color: var(--rose); }
+
+  @media (max-width: 520px) {
+    .card-name { font-size: 46px; }
+    .card-stack { height: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div id="setup-screen">
+  <div>
+    <div class="setup-title">Naming<br><em>Benito</em></div>
+  </div>
+
+  <div class="setup-card">
+    <h3>Connect your data</h3>
+    <div class="field-group">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="input-token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+    </div>
+    <div class="field-group">
+      <label>Gist ID</label>
+      <input type="text" id="input-gist" placeholder="e93cdbc1c0e8e8c14a8ddd76165bf4d8" autocomplete="off" />
+    </div>
+    <p style="font-size:11px;color:var(--ink-faint);line-height:1.6">Your token is stored only in your browser's local storage and never sent anywhere except GitHub's API.</p>
+    <p style="font-size:11px;color:var(--ink-faint);line-height:1.6;margin-top:8px"><strong style="font-weight:500;color:var(--ink-light)">Melissa:</strong> Charlie will send you a token — just paste it here. No GitHub account needed.</p>
+  </div>
+
+  <div class="setup-card">
+    <h3>Who are you?</h3>
+    <div class="voter-toggle">
+      <div class="voter-option selected" id="vo-charlie" onclick="selectVoter('Charlie')">Charlie</div>
+      <div class="voter-option" id="vo-partner" onclick="selectVoter('Melissa')">Melissa</div>
+    </div>
+  </div>
+
+  <button class="setup-btn" id="setup-btn" onclick="startApp()">Let's go</button>
+  <div class="setup-error" id="setup-error"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="app-header">
+    <div class="app-title">Naming <em>Benito</em></div>
+    <div class="voter-badge" id="voter-badge" onclick="switchVoter()">Charlie ↓</div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="showTab('vote')">Vote</button>
+    <button class="tab" onclick="showTab('matches')">Matches</button>
+    <button class="tab" onclick="showTab('all')">All votes</button>
+  </div>
+
+  <!-- VOTE PANEL -->
+  <div id="panel-vote">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="card-stack" id="card-stack"></div>
+    <div class="vote-btns" id="vote-btns">
+      <button class="vote-btn btn-no" onclick="castVote('no')">✕ Pass</button>
+      <button class="vote-btn btn-yes" onclick="castVote('yes')">✓ Love it</button>
+    </div>
+    <div class="counter" id="counter"></div>
+    <div class="add-name-row">
+      <input type="text" id="add-name-input" placeholder="Add a name..." maxlength="40" onkeydown="if(event.key==='Enter')addName()" />
+      <button class="add-btn" onclick="addName()">Add</button>
+    </div>
+    <div class="sync-bar" id="sync-bar"></div>
+  </div>
+
+  <!-- MATCHES PANEL -->
+  <div id="panel-matches" style="display:none">
+    <div id="matches-content"></div>
+    <div class="sync-bar" id="sync-bar-matches"></div>
+  </div>
+
+  <!-- ALL VOTES PANEL -->
+  <div id="panel-all" style="display:none">
+    <div id="all-content"></div>
+    <div class="sync-bar" id="sync-bar-all"></div>
+  </div>
+</div>
+
+<script>
+// ── NAME LIST ──────────────────────────────────────────────────────────────
+const BUILT_IN_NAMES = [
+  {name:"Oliver",origin:"Latin",meaning:"Olive tree, symbol of peace"},
+  {name:"Theodore",origin:"Greek",meaning:"Gift of God"},
+  {name:"Henry",origin:"Germanic",meaning:"Ruler of the home"},
+  {name:"Sebastian",origin:"Greek",meaning:"Venerable, revered one"},
+  {name:"Atticus",origin:"Latin",meaning:"Man of Athens; literary and noble"},
+  {name:"Callum",origin:"Gaelic",meaning:"Dove — peace and gentleness"},
+  {name:"August",origin:"Latin",meaning:"Majestic and venerable"},
+  {name:"Jasper",origin:"Persian",meaning:"Treasurer; keeper of the gem"},
+  {name:"Emmett",origin:"Germanic",meaning:"Whole, universal strength"},
+  {name:"Everett",origin:"English",meaning:"Brave as a wild boar"},
+  {name:"Finnegan",origin:"Irish",meaning:"Fair one, descendant of Finn"},
+  {name:"Hugo",origin:"Germanic",meaning:"Mind, intellect, spirit"},
+  {name:"Julius",origin:"Latin",meaning:"Youthful and downy-bearded"},
+  {name:"Kieran",origin:"Irish",meaning:"Little dark one"},
+  {name:"Magnus",origin:"Latin",meaning:"Great and mighty"},
+  {name:"Nico",origin:"Greek",meaning:"Victory of the people"},
+  {name:"Orion",origin:"Greek",meaning:"The great hunter rising in the sky"},
+  {name:"Rafferty",origin:"Irish",meaning:"Prosperity wielder"},
+  {name:"Caspian",origin:"Latin",meaning:"Of the Caspian Sea — adventurous"},
+  {name:"Florian",origin:"Latin",meaning:"Flowering and flourishing"},
+  {name:"Gideon",origin:"Hebrew",meaning:"Mighty warrior, feller of trees"},
+  {name:"Idris",origin:"Welsh",meaning:"Ardent lord"},
+  {name:"Leander",origin:"Greek",meaning:"Lion of a man"},
+  {name:"Matthias",origin:"Hebrew",meaning:"Gift of the Lord"},
+  {name:"Nikolai",origin:"Russian",meaning:"Victory of the people"},
+  {name:"Stellan",origin:"Swedish",meaning:"Calm and peaceful one"},
+  {name:"Percival",origin:"French",meaning:"One who pierces the valley"},
+  {name:"Quinlan",origin:"Irish",meaning:"Strong and well-shaped"},
+  {name:"Dashiell",origin:"French",meaning:"Page boy; rare and literary"},
+  {name:"Emrys",origin:"Welsh",meaning:"Immortal, of divine origin"},
+  {name:"Lionel",origin:"Latin",meaning:"Young lion"},
+  {name:"Benedict",origin:"Latin",meaning:"Blessed"},
+  {name:"Calloway",origin:"English",meaning:"Pebbly place; charming and rare"},
+  {name:"Declan",origin:"Irish",meaning:"Full of goodness"},
+  {name:"Edmund",origin:"English",meaning:"Fortunate protector"},
+  {name:"Felix",origin:"Latin",meaning:"Happy and fortunate"},
+  {name:"Gabriel",origin:"Hebrew",meaning:"God is my strength"},
+  {name:"Hamish",origin:"Scottish",meaning:"Supplanter — strong and steadfast"},
+  {name:"Isaac",origin:"Hebrew",meaning:"He will laugh"},
+  {name:"Jude",origin:"Hebrew",meaning:"Praised"},
+  {name:"Kaspar",origin:"Persian",meaning:"Treasurer, bringer of gifts"},
+  {name:"Lachlan",origin:"Scottish",meaning:"From the land of the lochs"},
+  {name:"Malachy",origin:"Irish",meaning:"Messenger of God"},
+  {name:"Nathaniel",origin:"Hebrew",meaning:"God has given"},
+  {name:"Oleander",origin:"Greek",meaning:"Evergreen beauty"},
+  {name:"Pascal",origin:"Latin",meaning:"Of Easter — born in springtime"},
+  {name:"Quentin",origin:"Latin",meaning:"The fifth — noble lineage"},
+  {name:"Ronan",origin:"Irish",meaning:"Little seal"},
+  {name:"Sullivan",origin:"Irish",meaning:"Dark-eyed one"},
+  {name:"Tobias",origin:"Hebrew",meaning:"God is good"},
+  {name:"Ulysses",origin:"Latin",meaning:"Wrathful wanderer — adventurous spirit"},
+  {name:"Vincent",origin:"Latin",meaning:"Conquering"},
+  {name:"Walter",origin:"Germanic",meaning:"Ruler of the army"},
+  {name:"Xavier",origin:"Basque",meaning:"The new house"},
+  {name:"Yorick",origin:"Danish",meaning:"Farmer, of the earth"},
+  {name:"Zephyr",origin:"Greek",meaning:"West wind — free and gentle"},
+  {name:"Adrian",origin:"Latin",meaning:"From the Adriatic Sea"},
+  {name:"Barnaby",origin:"Aramaic",meaning:"Son of consolation"},
+  {name:"Cassius",origin:"Latin",meaning:"Hollow — sharp and clever"},
+  {name:"Dimitri",origin:"Greek",meaning:"Devoted to Demeter, the earth"},
+  {name:"Elias",origin:"Hebrew",meaning:"My God is Yahweh"},
+  {name:"Finlay",origin:"Scottish",meaning:"Fair-haired hero"},
+  {name:"Gregory",origin:"Greek",meaning:"Watchful and alert"},
+  {name:"Hadrian",origin:"Latin",meaning:"From Hadria — worldly"},
+  {name:"Ignatius",origin:"Latin",meaning:"Fiery one"},
+  {name:"Jerome",origin:"Greek",meaning:"Sacred name"},
+  {name:"Killian",origin:"Irish",meaning:"Bright-headed, little warrior"},
+  {name:"Leopold",origin:"Germanic",meaning:"Bold people"},
+  {name:"Maxwell",origin:"Scottish",meaning:"Great stream"},
+  {name:"Niall",origin:"Irish",meaning:"Champion"},
+  {name:"Otto",origin:"Germanic",meaning:"Wealth and fortune"},
+  {name:"Phineas",origin:"Hebrew",meaning:"Oracle"},
+  {name:"Roland",origin:"Germanic",meaning:"Famous land"},
+  {name:"Silas",origin:"Latin",meaning:"Man of the forest"},
+  {name:"Theron",origin:"Greek",meaning:"Hunter"},
+  {name:"Upton",origin:"English",meaning:"From the upper settlement"},
+  {name:"Viggo",origin:"Norse",meaning:"War and battle — brave"},
+  {name:"Wilder",origin:"English",meaning:"Untamed spirit"},
+  {name:"Xander",origin:"Greek",meaning:"Defender of the people"},
+  {name:"Yannick",origin:"French",meaning:"God is gracious"},
+  {name:"Zane",origin:"Hebrew",meaning:"God is gracious"},
+  {name:"Alastair",origin:"Scottish",meaning:"Defender of men"},
+  {name:"Beaumont",origin:"French",meaning:"Beautiful mountain"},
+  {name:"Cormac",origin:"Irish",meaning:"Charioteer"},
+  {name:"Dorian",origin:"Greek",meaning:"Of the sea — timeless"},
+  {name:"Elio",origin:"Italian",meaning:"Sun"},
+  {name:"Fionn",origin:"Irish",meaning:"Fair and white"},
+  {name:"Gatsby",origin:"English",meaning:"From the great estate — dashing"},
+  {name:"Hawthorne",origin:"English",meaning:"Hawthorn tree — resilience"},
+  {name:"Idris",origin:"Arabic",meaning:"Studious and wise"},
+  {name:"Jonah",origin:"Hebrew",meaning:"Dove"},
+  {name:"Kit",origin:"English",meaning:"Pure — diminutive of Christopher"},
+  {name:"Luca",origin:"Italian",meaning:"Light"},
+  {name:"Mercer",origin:"English",meaning:"Merchant — clever and resourceful"},
+  {name:"Nestor",origin:"Greek",meaning:"Homecoming — wise traveler"},
+  {name:"Oberon",origin:"Germanic",meaning:"Noble bear — regal spirit"},
+  {name:"Pierce",origin:"English",meaning:"Son of Piers — rock"},
+  {name:"Raffael",origin:"Hebrew",meaning:"God has healed"},
+  {name:"Soren",origin:"Scandinavian",meaning:"Stern — philosophical spirit"},
+  {name:"Thaddeus",origin:"Aramaic",meaning:"Courageous heart"},
+  {name:"Uriel",origin:"Hebrew",meaning:"God is my light"},
+  {name:"Vance",origin:"English",meaning:"From the marshland"},
+  {name:"Willoughby",origin:"English",meaning:"From the willow farm"},
+  {name:"Xavi",origin:"Catalan",meaning:"The bright new house"},
+  {name:"Yves",origin:"French",meaning:"Yew tree — enduring"},
+  {name:"Zane",origin:"American",meaning:"Gift of God"},
+  {name:"Alistair",origin:"Scottish",meaning:"Defender of men"},
+  {name:"Bram",origin:"Dutch",meaning:"Father of many"},
+  {name:"Cael",origin:"Irish",meaning:"Slender"},
+  {name:"Darian",origin:"Persian",meaning:"Upholder of good"},
+  {name:"Ellis",origin:"Welsh",meaning:"Benevolent"},
+  {name:"Fletcher",origin:"English",meaning:"Arrow maker"},
+  {name:"Griffith",origin:"Welsh",meaning:"Strong lord"},
+  {name:"Huxley",origin:"English",meaning:"From Hugh's meadow"},
+  {name:"Inigo",origin:"Spanish",meaning:"Fiery one"},
+  {name:"Jory",origin:"Cornish",meaning:"Farmer"},
+  {name:"Knox",origin:"Scottish",meaning:"From the hills"},
+  {name:"Lysander",origin:"Greek",meaning:"Liberator"},
+  {name:"Merlin",origin:"Welsh",meaning:"Sea fortress"},
+  {name:"Noel",origin:"French",meaning:"Born at Christmas"},
+  {name:"Oswin",origin:"English",meaning:"God's friend"},
+  {name:"Penn",origin:"English",meaning:"Enclosure — quiet strength"},
+  {name:"Ridley",origin:"English",meaning:"Reed clearing"},
+  {name:"Shaw",origin:"English",meaning:"Dweller by the wood"},
+  {name:"Tarquin",origin:"Latin",meaning:"Of the Tarquins — ancient and bold"},
+  {name:"Ugo",origin:"Italian",meaning:"Heart and mind"},
+  {name:"Valor",origin:"English",meaning:"Courage and strength"},
+  {name:"Wren",origin:"English",meaning:"Small bird — spirited"},
+  {name:"Xenos",origin:"Greek",meaning:"Stranger, guest — welcoming spirit"},
+  {name:"Yale",origin:"Welsh",meaning:"Fertile upland"},
+  {name:"Zebedee",origin:"Hebrew",meaning:"Gift of God"}
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────
+const GIST_ID = 'e93cdbc1c0e8e8c14a8ddd76165bf4d8';
+let token = '';
+let voter = 'Charlie';
+let allNames = [...BUILT_IN_NAMES];
+let votes = {};
+let voterIndex = {Charlie: 0, Melissa: 0};
+let activeTab = 'vote';
+let syncing = false;
+
+// ── SETUP ────────────────────────────────────────────────────────────────
+function selectVoter(v) {
+  voter = v;
+  document.getElementById('vo-charlie').classList.toggle('selected', v === 'Charlie');
+  document.getElementById('vo-partner').classList.toggle('selected', v === 'Melissa');
+}
+
+async function startApp() {
+  const t = document.getElementById('input-token').value.trim();
+  const g = document.getElementById('input-gist').value.trim();
+  const errEl = document.getElementById('setup-error');
+  const btn = document.getElementById('setup-btn');
+
+  if (!t) { showSetupError('Please enter your GitHub token.'); return; }
+
+  token = t;
+  btn.disabled = true;
+  btn.textContent = 'Connecting...';
+  errEl.style.display = 'none';
+
+  try {
+    await loadFromGist();
+    localStorage.setItem('bn_token', t);
+    localStorage.setItem('bn_voter', voter);
+    document.getElementById('setup-screen').style.display = 'none';
+    const app = document.getElementById('app');
+    app.style.display = 'flex';
+    document.getElementById('voter-badge').textContent = voter + ' ↓';
+    renderVote();
+  } catch(e) {
+    showSetupError('Could not connect. Check your token and Gist ID.');
+    btn.disabled = false;
+    btn.textContent = "Let's go";
+  }
+}
+
+function showSetupError(msg) {
+  const el = document.getElementById('setup-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ── GIST API ────────────────────────────────────────────────────────────
+async function loadFromGist() {
+  const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!res.ok) throw new Error('Gist load failed');
+  const data = await res.json();
+  const content = data.files['votes.json']?.content || '{}';
+  const parsed = JSON.parse(content);
+  votes = parsed.votes || {};
+  voterIndex = parsed.voterIndex || {Charlie: 0, Melissa: 0};
+  const extra = parsed.customNames || [];
+  extra.forEach(n => { if (!allNames.find(x => x.name === n.name)) allNames.push(n); });
+}
+
+async function saveToGist(status) {
+  setSyncBar(status || 'syncing', 'Saving...');
+  syncing = true;
+  try {
+    const payload = { votes, voterIndex, customNames: allNames.slice(BUILT_IN_NAMES.length) };
+    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ files: { 'votes.json': { content: JSON.stringify(payload) } } })
+    });
+    if (!res.ok) throw new Error();
+    setSyncBar('ok', 'Saved');
+    setTimeout(() => setSyncBar('', ''), 2000);
+  } catch(e) {
+    setSyncBar('error', 'Save failed — check connection');
+  }
+  syncing = false;
+}
+
+async function refreshFromGist() {
+  try {
+    await loadFromGist();
+    if (activeTab === 'matches') renderMatches();
+    if (activeTab === 'all') renderAll();
+    if (activeTab === 'vote') renderVote();
+  } catch(e) {}
+}
+
+function setSyncBar(type, msg) {
+  ['sync-bar','sync-bar-matches','sync-bar-all'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'sync-bar' + (type === 'syncing' ? ' syncing' : type === 'error' ? ' error' : '');
+  });
+}
+
+// ── TABS ────────────────────────────────────────────────────────────────
+function showTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['vote','matches','all'][i] === tab);
+  });
+  document.getElementById('panel-vote').style.display = tab === 'vote' ? '' : 'none';
+  document.getElementById('panel-matches').style.display = tab === 'matches' ? '' : 'none';
+  document.getElementById('panel-all').style.display = tab === 'all' ? '' : 'none';
+  if (tab === 'matches') { refreshFromGist(); renderMatches(); }
+  if (tab === 'all') { refreshFromGist(); renderAll(); }
+}
+
+// ── SWITCH VOTER ────────────────────────────────────────────────────────
+function switchVoter() {
+  voter = voter === 'Charlie' ? 'Melissa' : 'Charlie';
+  document.getElementById('voter-badge').textContent = voter + ' ↓';
+  localStorage.setItem('bn_voter', voter);
+  renderVote();
+}
+
+// ── VOTE ────────────────────────────────────────────────────────────────
+function renderVote() {
+  const idx = voterIndex[voter] || 0;
+  const stack = document.getElementById('card-stack');
+  const btns = document.getElementById('vote-btns');
+  const counter = document.getElementById('counter');
+  const fill = document.getElementById('progress-fill');
+
+  if (idx >= allNames.length) {
+    stack.innerHTML = `<div class="name-card front done-state">
+      <div class="done-icon">✓</div>
+      <div class="done-title">All done, ${voter}!</div>
+      <div class="done-sub">You've voted on all ${allNames.length} names.<br>Check Matches to see shared favorites.</div>
+      <button class="ghost-btn" onclick="resetVoter()">Start over</button>
+    </div>`;
+    btns.style.display = 'none';
+    counter.textContent = '';
+    fill.style.width = '100%';
+    return;
+  }
+
+  btns.style.display = 'grid';
+  fill.style.width = Math.round((idx / allNames.length) * 100) + '%';
+  counter.textContent = (idx + 1) + ' of ' + allNames.length;
+
+  const curr = allNames[idx];
+  const next = allNames[idx + 1];
+
+  stack.innerHTML = `
+    ${next ? `<div class="name-card back">
+      <div class="card-name">${next.name}</div>
+    </div>` : ''}
+    <div class="name-card front" id="front-card">
+      <div class="card-origin">${curr.origin}</div>
+      <div class="card-name">${curr.name}</div>
+      <div class="card-meaning">${curr.meaning}</div>
+      <div class="card-hints">
+        <span class="hint hint-no">← Pass</span>
+        <span class="hint hint-yes">Love it →</span>
+      </div>
+    </div>
+  `;
+}
+
+function castVote(choice) {
+  const idx = voterIndex[voter] || 0;
+  if (idx >= allNames.length) return;
+  const name = allNames[idx].name;
+  if (!votes[name]) votes[name] = {};
+  votes[name][voter] = choice;
+  voterIndex[voter] = idx + 1;
+
+  const card = document.getElementById('front-card');
+  if (card) {
+    card.classList.add(choice === 'yes' ? 'fly-yes' : 'fly-no');
+    setTimeout(() => { renderVote(); saveToGist(); }, 340);
+  } else {
+    renderVote();
+    saveToGist();
+  }
+}
+
+function resetVoter() {
+  voterIndex[voter] = 0;
+  allNames.forEach(n => { if (votes[n.name]) delete votes[n.name][voter]; });
+  saveToGist();
+  renderVote();
+}
+
+// ── ADD NAME ────────────────────────────────────────────────────────────
+function addName() {
+  const input = document.getElementById('add-name-input');
+  const raw = input.value.trim();
+  if (!raw) return;
+  const name = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+  if (allNames.find(n => n.name.toLowerCase() === name.toLowerCase())) {
+    input.value = '';
+    return;
+  }
+  allNames.push({ name, origin: 'Custom', meaning: 'Added by you' });
+  input.value = '';
+  renderVote();
+  saveToGist();
+}
+
+// ── MATCHES ────────────────────────────────────────────────────────────
+function renderMatches() {
+  const matches = allNames.filter(n => {
+    const v = votes[n.name] || {};
+    return v['Charlie'] === 'yes' && v['Melissa'] === 'yes';
+  });
+  const el = document.getElementById('matches-content');
+  if (!matches.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-title">No matches yet</div>
+      <div class="empty-sub">Names you both love will appear here.<br>Keep swiping!</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `<div class="section-label">${matches.length} match${matches.length !== 1 ? 'es' : ''}</div>
+    <div class="matches-grid">
+      ${matches.map(n => `<div class="match-card">
+        <div class="match-name">${n.name}</div>
+        <div style="margin-top:6px"><span class="match-pill">Both love it</span></div>
+      </div>`).join('')}
+    </div>`;
+}
+
+// ── ALL VOTES ────────────────────────────────────────────────────────────
+function renderAll() {
+  const voted = allNames.filter(n => votes[n.name] && Object.keys(votes[n.name]).length > 0);
+  const el = document.getElementById('all-content');
+  if (!voted.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-title">No votes yet</div>
+      <div class="empty-sub">Start swiping to see votes here.</div>
+    </div>`;
+    return;
+  }
+
+  const yesCharlie = voted.filter(n => votes[n.name]?.Charlie === 'yes').length;
+  const yesMelissa = voted.filter(n => votes[n.name]?.Melissa === 'yes').length;
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem">
+      <div style="background:var(--warm-white);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center">
+        <div style="font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px">Charlie loves</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--sage)">${yesCharlie}</div>
+      </div>
+      <div style="background:var(--warm-white);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:1rem;text-align:center">
+        <div style="font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px">Melissa loves</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--sage)">${yesMelissa}</div>
+      </div>
+    </div>
+    <div class="section-label">${voted.length} voted</div>
+    <div class="votes-list">
+      ${voted.map(n => {
+        const v = votes[n.name] || {};
+        return `<div class="vote-row">
+          <div class="vote-row-name">${n.name}</div>
+          <div class="vote-indicators">
+            <div class="v-col">
+              <div class="v-dot ${v.Charlie === 'yes' ? 'v-yes' : v.Charlie === 'no' ? 'v-no' : 'v-pending'}">${v.Charlie === 'yes' ? '✓' : v.Charlie === 'no' ? '✕' : '?'}</div>
+              <div class="voter-label">C</div>
+            </div>
+            <div class="v-col">
+              <div class="v-dot ${v.Melissa === 'yes' ? 'v-yes' : v.Melissa === 'no' ? 'v-no' : 'v-pending'}">${v.Melissa === 'yes' ? '✓' : v.Melissa === 'no' ? '✕' : '?'}</div>
+              <div class="voter-label">P</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────
+(function init() {
+  const saved = localStorage.getItem('bn_token');
+  const savedVoter = localStorage.getItem('bn_voter');
+  if (saved) document.getElementById('input-token').value = saved;
+  if (savedVoter) {
+    voter = savedVoter;
+    selectVoter(savedVoter);
+  }
+  document.getElementById('input-gist').value = GIST_ID;
+})();
+</script>
+</body>
+</html>
